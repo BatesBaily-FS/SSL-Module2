@@ -22,7 +22,7 @@ const getAllPaintings = async (req, res) => {
 
 const createPainting = async (req, res) => {
   try {
-    const newPainting = await Paintings.create(req.body);
+    const newPainting = await Paintings.create(req.body.painting);
     console.log("data >>>", newPainting);
     res.status(200).json({
       data: newPainting,
@@ -88,7 +88,7 @@ const deletePainting = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const paintings = await Paintings.findByIdAndDelete(id);
+    const paintings = await Paintings.findByIdAndDelete(id, req.body);
     res.status(200).json({
       id,
       success: true,
