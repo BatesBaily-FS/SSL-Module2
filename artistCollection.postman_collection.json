@@ -1,0 +1,624 @@
+{
+	"info": {
+		"_postman_id": "9fdac915-b941-49d5-8e8e-22a2ec6f87ef",
+		"name": "artistCollection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36033829"
+	},
+	"item": [
+		{
+			"name": "Artist",
+			"item": [
+				{
+					"name": "GetAllArtists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response should be okay to process and have data property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"data\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('data');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Responce should be okay to process and have success property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"success\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('success');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/artist/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"artist",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetArtistById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response should be okay to process and have id property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"id\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('id');",
+									"});",
+									"    ",
+									"pm.test(\"Get Artist By Id should return valid response\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/artist/{{artistId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"artist",
+								"{{artistId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateArtist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 (Created)\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has created resource ID\", function () {",
+									"    const responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.have.property(\"data\");",
+									"    pm.expect(responseBody.data).to.have.property(\"_id\").that.is.not.null;",
+									"    pm.expect(responseBody.data._id).to.have.lengthOf(24);",
+									"",
+									"    pm.collectionVariables.set(\"artistId\", responseBody.data._id);",
+									"",
+									"",
+									"    pm.test(\"The response has all properties\", () => {",
+									"        const responseBody = pm.response.json();",
+									"        const { data } = responseBody;",
+									"        pm.expect(data.name).to.be.a('string');",
+									"        pm.expect(data.name).to.eql(\"Edgar Degas\");",
+									"        pm.expect(data.yearBorn).to.eql(1834);",
+									"        pm.expect(data.yearBorn).to.be.a('number')",
+									"",
+									"    });",
+									"",
+									"    // pm.test(\"Each painting in the response has a non-empty name property\", function () {",
+									"    //     const responseBody = pm.response.json();",
+									"    //     const paintings = responseBody.data.paintings;",
+									"",
+									"    //     paintings.forEach((painting) => {",
+									"    //         pm.expect(painting.name).to.be.a('string').and.to.not.be.empty;",
+									"    //     });",
+									"    // });",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"artist\": {\n    \"name\": \"Edgar Degas\",\n    \"yearBorn\": 1834,\n    \"medium\": \"painter\",\n    \"description\": \"Edgar Degas was a French Impressionist artist famous for his pastel drawings and oil paintings. Degas also produced bronze sculptures, prints, and drawings. Degas is especially identified with the subject of dance; more than half of his works depict dancers.\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/artist",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"artist"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteArtist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Artist By Id should return valid response\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"",
+									"});",
+									"",
+									"pm.test(\"Response should be okay to process and have id property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"id\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('id');",
+									"});",
+									"",
+									"pm.test(\"Response should have a message property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.jsonBody(\"message\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('message');",
+									"",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/artist/6671eebabe8c49212ecbb2c0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"artist",
+								"6671eebabe8c49212ecbb2c0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateArtist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update By Id should return valid response\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"",
+									"});",
+									"",
+									"pm.test(\"Response should be okay to process and have data property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"data\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('data');",
+									"});",
+									"",
+									"pm.test(\"Response should have a sucess property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.jsonBody(\"success\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('success');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Pablo Piscasso\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/artist/6671ea25f171a4887f4080d6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"artist",
+								"6671ea25f171a4887f4080d6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Paintings",
+			"item": [
+				{
+					"name": "GetAllPaintings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response should be okay to process and have data property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"data\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('data');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Responce should a have message property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.jsonBody(\"message\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/painting",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"painting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetPaintingById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response should have a data property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"data\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('data');",
+									"});",
+									"    ",
+									"pm.test(\"Get Artist By Id should return valid response\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/painting/{{paintingId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"painting",
+								"{{paintingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreatePainting",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 (Created)\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has created resource ID\", function () {",
+									"    const responseBody = pm.response.json();",
+									"    pm.expect(responseBody.data).to.have.property(\"_id\").that.is.not.null;",
+									"    pm.expect(responseBody.data._id).to.have.lengthOf(24);",
+									"",
+									"    pm.collectionVariables.set(\"paintingId\", responseBody.data._id);",
+									"});",
+									"",
+									"",
+									"    pm.test(\"The response has all properties\", () => {",
+									"        const responseBody = pm.response.json();",
+									"        const { data } = responseBody;",
+									"        pm.expect(data.artist).to.be.a('string');",
+									"        pm.expect(data.dateReleased).to.be.a('string')",
+									"",
+									"    });",
+									"",
+									"    // pm.test(\"Each painting in the response has a non-empty name property\", function () {",
+									"    //     const responseBody = pm.response.json();",
+									"    //     const paintings = responseBody.data.paintings;",
+									"",
+									"    //     paintings.forEach((painting) => {",
+									"    //         pm.expect(painting.name).to.be.a('string').and.to.not.be.empty;",
+									"    //     });",
+									"    // });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"painting\": {\n        \"paintingName\": \"Mona Lisa\",\n        \"artist\": \"Leonardo da Vinci\",\n        \"dateReleased\": \"1503\",\n        \"medium\": \"oil paint\",\n        \"location\": \"The Louve\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/painting",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"painting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletePainting",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Artist By Id should return valid response\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"",
+									"});",
+									"",
+									"pm.test(\"Response should have a id property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"id\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('id');",
+									"});",
+									"",
+									"pm.test(\"Response should have a message property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.jsonBody(\"message\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('message');",
+									"",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/painting/6673956d7d18a069315c96af",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"painting",
+								"6673956d7d18a069315c96af"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdatePainting",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update By Id should return valid response\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"",
+									"});",
+									"",
+									"pm.test(\"Response should be okay to process and have data property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    pm.response.to.have.jsonBody(\"data\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('data');",
+									"});",
+									"",
+									"pm.test(\"Response should have a sucess property\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.jsonBody(\"success\");",
+									"    pm.response.to.not.have.jsonBody(\"error\");",
+									"    pm.expect(pm.response.json()).to.have.property('success');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Mona Lisa\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/painting/667364a3a0114cb543dc9a6b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"painting",
+								"667364a3a0114cb543dc9a6b"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "artistId",
+			"value": ""
+		},
+		{
+			"key": "paintingId",
+			"value": ""
+		}
+	]
+}
