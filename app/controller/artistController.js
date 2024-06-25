@@ -1,7 +1,32 @@
 const Artists = require("../models/Artists");
 
 const getAllArtists = async (req, res) => {
-  const artists = await Artists.find({});
+  let queryString = JSON.stringify(req.query);
+
+  queryString = queryString.replace(
+    /\b(gt|gte|lt|lte)\b/g,
+    (match) => `$${match}`
+  );
+  let query = Artists.find(JSON.parse(queryString));
+
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = Artists.find({}).select(sortBy);
+  }
+
+  if (req.query.select) {
+    const fields = req.query.select.split(",").join(" ");
+    query = Artists.find({}).select(fields);
+  }
+
+  // query = Artists.find({});
+  // const page = parseInt(req.query.page) || 1;
+  // const limit = parseInt(req.query.limit);
+  // const skip = (page - 1) * limit;
+
+  // query.skip(skip).limit(limit);
+
+  const artists = await query;
 
   try {
     res.status(200).json({
@@ -26,9 +51,14 @@ const createArtist = async (req, res) => {
   try {
     const newArtist = await Artists.create(artist);
     console.log("data >>>", newArtist);
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: `${req.method} - request to Artist endpoint`,
+      data: {
+        _id: newArtist._id,
+        name: newArtist.name,
+        yearBorn: newArtist.yearBorn,
+      },
     });
   } catch (error) {
     if (error.name == "ValidationError") {
@@ -66,7 +96,9 @@ const updateArtist = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const artist = await Artists.findByIdAndUpdate(id, req.body, { new: true });
+    const artist = await Artists.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
     res.status(200).json({
       data: artist,
       success: true,

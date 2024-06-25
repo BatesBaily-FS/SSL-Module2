@@ -1,11 +1,37 @@
 const Paintings = require("../models/Paintings");
+const Artist = require("../models/Artists");
 
 const getAllPaintings = async (req, res) => {
-  const paintings = await Paintings.find({});
+  let queryString = JSON.stringify(req.query);
+
+  queryString = queryString.replace(
+    /\b(gt|gte|lt|lte)\b/g,
+    (match) => `$${match}`
+  );
+  let query = Paintings.find(JSON.parse(queryString));
+
+  if (req.query.select) {
+    const fields = req.query.select.split(",").join(" ");
+    query = Paintings.find({}).select(fields);
+  }
+
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = Paintings.find({}).select(sortBy);
+  }
+
+  query = Paintings.find({});
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 2;
+  const skip = (page - 1) * limit;
+
+  query.skip(skip).limit(limit);
+
+  const painting = await query;
 
   try {
     res.status(200).json({
-      data: paintings,
+      data: painting,
       success: true,
       message: `${req.method} - request to Painting endpoint`,
     });
@@ -22,10 +48,22 @@ const getAllPaintings = async (req, res) => {
 
 const createPainting = async (req, res) => {
   try {
-    const newPainting = await Paintings.create(req.body.painting);
-    console.log("data >>>", newPainting);
-    res.status(200).json({
-      data: newPainting,
+    const { painting } = req.body;
+    const user = await Artist.findById(painting.artist);
+
+    if (!user) {
+      return res.status(404).json({ error: "Artist not found" });
+    }
+
+    painting.artist = user;
+    const paintingData = new Paintings(painting);
+    user.paintings.push(paintingData._id);
+    user.totalPaintings = user.paintings.length;
+    const queries = [paintingData.save(), user.save()];
+    await Promise.all(queries);
+
+    res.status(201).json({
+      data: paintingData,
       success: true,
       message: `${req.method} - request to Paintings endpoint`,
     });
