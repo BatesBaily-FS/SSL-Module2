@@ -8,21 +8,22 @@ const getAllPaintings = async (req, res) => {
     /\b(gt|gte|lt|lte)\b/g,
     (match) => `$${match}`
   );
-  let query = Paintings.find(JSON.parse(queryString));
+  query = Paintings.find(JSON.parse(queryString));
+
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = Paintings.find({}).sort(sortBy);
+  } else {
+    query = Paintings.find({});
+  }
 
   if (req.query.select) {
     const fields = req.query.select.split(",").join(" ");
     query = Paintings.find({}).select(fields);
   }
 
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
-    query = Paintings.find({}).select(sortBy);
-  }
-
-  query = Paintings.find({});
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 2;
+  const limit = parseInt(req.query.limit);
   const skip = (page - 1) * limit;
 
   query.skip(skip).limit(limit);

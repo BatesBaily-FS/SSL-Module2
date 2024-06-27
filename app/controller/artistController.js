@@ -7,11 +7,13 @@ const getAllArtists = async (req, res) => {
     /\b(gt|gte|lt|lte)\b/g,
     (match) => `$${match}`
   );
-  let query = Artists.find(JSON.parse(queryString));
+  query = Artists.find(JSON.parse(queryString));
 
   if (req.query.sort) {
     const sortBy = req.query.sort.split(",").join(" ");
-    query = Artists.find({}).select(sortBy);
+    query = Artists.find({}).sort(sortBy);
+  } else {
+    query = Artists.find({});
   }
 
   if (req.query.select) {
@@ -19,12 +21,11 @@ const getAllArtists = async (req, res) => {
     query = Artists.find({}).select(fields);
   }
 
-  // query = Artists.find({});
-  // const page = parseInt(req.query.page) || 1;
-  // const limit = parseInt(req.query.limit);
-  // const skip = (page - 1) * limit;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit);
+  const skip = (page - 1) * limit;
 
-  // query.skip(skip).limit(limit);
+  query.skip(skip).limit(limit);
 
   const artists = await query;
 
